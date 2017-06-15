@@ -1,0 +1,11 @@
+{
+    "name": "grace",
+    "description": "Amazing Grace",
+    "memory": 128,
+    "timeout": 5,
+    "role": "arn:aws:iam::869575201172:role/grace_lambda_function",
+    "environment": {
+        "comment": "project env",
+        "SOME_TOKEN": "shhh this is secret"
+    }
+}

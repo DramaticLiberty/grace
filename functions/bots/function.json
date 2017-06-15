@@ -1,0 +1,8 @@
+{
+    "description": "Return our list of bots.",
+    "timeout": 10,
+    "memory": 128,
+    "environment": {
+        "SOME_OTHER_TOKEN": "shhh this is secret"
+    }
+}
