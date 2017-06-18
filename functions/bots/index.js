@@ -4,7 +4,7 @@ const lexmodelbuildingservice = new AWS.LexModelBuildingService({apiVersion: '20
 
 const projectName = {
     name: 'ProjectName',
-    description: 'The names of all our projects'
+    description: 'The names of all our projects',
     enumerationValues: [
         {value: 'Entry'},
         {value: 'eSource'},
@@ -39,7 +39,7 @@ const intent = {
         sampleUtterances: [
             "Project {Project}.",
             "App {Project}.",
-            "Webapp {Project}."
+            "Webapp {Project}.",
             "{Project}."
         ],
         slotConstraint: "Required",
