@@ -10,6 +10,7 @@ $ source .aws-env
 $ apex deploy  # deploy functions
 $ apex bots  # list bots
 $ apex upbot  # create/update gracebot
+$ apex hello  # say hello
 ```
 
 # Links

@@ -19,11 +19,11 @@ const projectName = {
 const intent = {
     name: 'CodeRepositories',
     sampleUtterances: [
-        "Where is the source code?",
-        "What is the code repository for {project}?",
-        "Where is the code repository for {project}?",
-        "Where is the code for {project}?",
-        "What is the repository for {project} source code?"
+        "Where is the source code",
+        "What is the code repository for {project} ",
+        "Where is the code repository for {project} ",
+        "Where is the code for {project} ",
+        "What is the repository for {project} source code "
     ],
     slots: [{
         name: "project",
@@ -37,10 +37,10 @@ const intent = {
             ]
         },
         sampleUtterances: [
-            "Project {project}",
-            "App {project}",
-            "Webapp {project}",
-            "For {project}"
+            "Project {project} ",
+            "App {project} ",
+            "Webapp {project} ",
+            "For {project} "
         ],
         slotConstraint: "Required",
         slotType: "ProjectName",
