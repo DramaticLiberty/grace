@@ -20,13 +20,13 @@ const intent = {
     name: 'CodeRepositories',
     sampleUtterances: [
         "Where is the source code?",
-        "What is the code repository for {Project}?",
-        "Where is the code repository for {Project}?",
-        "Where is the code for {Project}?",
-        "What is the repository for {Project} source code?"
+        "What is the code repository for {project}?",
+        "Where is the code repository for {project}?",
+        "Where is the code for {project}?",
+        "What is the repository for {project} source code?"
     ],
     slots: [{
-        name: "Project",
+        name: "project",
         description: "The name of a project.",
         priority: 3,
         valueElicitationPrompt: {
@@ -37,10 +37,10 @@ const intent = {
             ]
         },
         sampleUtterances: [
-            "Project {Project}.",
-            "App {Project}.",
-            "Webapp {Project}.",
-            "{Project}."
+            "Project {project}",
+            "App {project}",
+            "Webapp {project}",
+            "For {project}"
         ],
         slotConstraint: "Required",
         slotType: "ProjectName",
@@ -57,13 +57,16 @@ const intent = {
             {contentType: "PlainText", content: "k thnx bye"}
         ]
     },
+    /*
+    For some reason lex does not like this
     conclusionStatement: {
         messages: [
             {contentType: "PlainText", content: "Anything else?"},
             {contentType: "PlainText", content: "Can I help with anything else?"}
         ],
-        responseCard: "foo"
+        responseCard: "string"
     },
+    */
     fulfillmentActivity: {
         type: "ReturnIntent"
     }
@@ -71,7 +74,6 @@ const intent = {
 
 exports.handle = function(e, ctx, cb) {
     console.log('processing event: %j', e);
-    // TODO: use promises, async await or go insane
     
     const c1 = lexmodelbuildingservice
         .getSlotType({name: projectName.name, version: "$LATEST"})
