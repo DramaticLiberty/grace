@@ -5,7 +5,7 @@ const lexruntime = new AWS.LexRuntime({apiVersion: '2016-11-28'});
 
 exports.handle = function(e, ctx, cb) {
     console.log('processing event: %j', e);
-    const text = 'Hi there!';
+    const text = 'Where is the code?';
     lexruntime
         .postText({botName: 'grace', botAlias: 'grace', userId: 'Jane', inputText: text})
         .promise()
