@@ -29,35 +29,32 @@ const projectMap = {
 };
 
 function createTable(tableDef) {
-    const maybeDelete = dynamodb.deleteTable(
+    const ensureCreate = dynamodb.createTable(tableDef).promise();
+    return dynamodb.deleteTable(
         {'TableName': tableDef['TableName']})
         .promise()
-        .catch(() => {
-            // do nothing
-        })
-    return Promise.all([
-        maybeDelete,
-        dynamodb.createTable(tableDef).promise()]);
+        .then(ensureCreate)
+        .catch(ensureCreate);
 };
 
 function populateTable(tableDef, content) {
     const keyField = tableDef['AttributeDefinitions'][0]['AttributeName'];
-    
-    return Promise.all([
-        dynamodb.putItem({
-            'TableName': tableDef['TableName']}
-            'Item': {
-                keyfield: {S: }
-            }
-        }).promise()
-    ]);
+    const valueField = tableDef['AttributeDefinitions'][1]['AttributeName'];
+    const items = new Array();
+    for(item in content) {
+        const kvItem = {};
+        kvItem[keyField] = {S: item};
+        kvItem[valueField] = {S: content[item]} 
+        items.push({PutRequest: {Item: kvItem}});
+    };
+    const requests = {};
+    requests[tableDef['TableName']] = items;
+    return dynamodb.batchWriteItem({'RequestItems': requests}).promise();
 };
 
 exports.handle = function(e, ctx, cb) {
-    Promise.all([
-        createTable(projectsTable)
-        populateTable(projectsTable, projectMap)
-    ])
+    createTable(projectsTable)
+    .then(populateTable(projectsTable, projectMap))
     .then((data) => {
         cb(null, {status: 'OK'});
     })
@@ -65,5 +62,4 @@ exports.handle = function(e, ctx, cb) {
         console.log(err, err.stack);
         cb(null, { status: 'Error: ' + err });
     });
-
 };
