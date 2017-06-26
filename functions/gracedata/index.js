@@ -29,12 +29,11 @@ const projectMap = {
 };
 
 function createTable(tableDef) {
-    const ensureCreate = dynamodb.createTable(tableDef).promise();
     return dynamodb.deleteTable(
         {'TableName': tableDef['TableName']})
         .promise()
-        .then(ensureCreate)
-        .catch(ensureCreate);
+        .then(() => { return dynamodb.createTable(tableDef).promise(); })
+        .catch(() => { return dynamodb.createTable(tableDef).promise(); });
 };
 
 function populateTable(tableDef, content) {
@@ -44,7 +43,7 @@ function populateTable(tableDef, content) {
     for(item in content) {
         const kvItem = {};
         kvItem[keyField] = {S: item};
-        kvItem[valueField] = {S: content[item]} 
+        kvItem[valueField] = {S: content[item]};
         items.push({PutRequest: {Item: kvItem}});
     };
     const requests = {};
@@ -54,6 +53,9 @@ function populateTable(tableDef, content) {
 
 exports.handle = function(e, ctx, cb) {
     createTable(projectsTable)
+    .catch((err) => {
+        console.log(err, err.stack);
+    })
     .then(populateTable(projectsTable, projectMap))
     .then((data) => {
         cb(null, {status: 'OK'});

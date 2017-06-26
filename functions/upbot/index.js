@@ -26,15 +26,16 @@ const projectRepository = {
 };
 
 
-function readSlotType(tableName, tableAttr, slotType) {
+function updateSlotType(tableName, tableAttr, slotType) {
     return Promise.all([
         lexmodelbuildingservice
             .getSlotType({name: slotType.name, version: "$LATEST"})
             .promise(),
         dynamodb
-            .scan({TableName: tablename})
+            .scan({TableName: tableName})
             .promise()
     ]).then((data) => {
+        console.log('Updating slot type ', slotType.name);
         slotType.checksum = data[0].checksum;
         
         const values = new Array();
@@ -44,7 +45,9 @@ function readSlotType(tableName, tableAttr, slotType) {
         slotType['enumerationValues'] = values;
         
         return lexmodelbuildingservice.putSlotType(slotType).promise();
-    }).catch(() => {});
+    }).catch((err) => {
+        console.log( err, err.stack);
+    });
 };
 
 
@@ -163,25 +166,33 @@ const getRepository = {
     }
 };
 
+function updateIntent(intent) {
+    return lexmodelbuildingservice
+        .getIntent({name: intent.name, version: "$LATEST"})
+        .promise()
+        .then((data) => {
+            intent.checksum = data.checksum;
+        })
+        .catch(() => {})
+        .then(() => {
+            console.log('Updating intent: ', intent.name);
+            return lexmodelbuildingservice.putIntent(intent).promise();
+        });
+};
 
 exports.handle = function(e, ctx, cb) {
     console.log('processing event: %j', e);
     
-    const c1 = readSlotType('projects', 'name', projectName);
+    const st1 = updateSlotType('projects', 'name', projectName);
+    const st2 = updateSlotType('projects', 'url', projectRepository);
     
-    const c2 = lexmodelbuildingservice
-        .getIntent({name: getRepository.name, version: "$LATEST"})
-        .promise()
-        .then((data) => {
-            getRepository.checksum = data.checksum;
-            console.log('YYY', data.name, data.checksum);
-        })
-        .catch(() => {});
+    const i1 = updateIntent(getRepository);
+    const i2 = updateIntent(addProject);
     
     Promise
-        .all([c1, c2])
+        .all([st1, st2])
         .then(() => {
-            return lexmodelbuildingservice.putIntent(getRepository).promise();
+            return Promise.all([i1, i2])
         })
         .then((data) => {
             cb(null, data);
